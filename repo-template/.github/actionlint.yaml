@@ -1,0 +1,5 @@
+# Tells actionlint about the custom self-hosted runner labels.
+self-hosted-runner:
+  labels:
+    - claude
+    - factory

@@ -1,0 +1,11 @@
+# Keeps the SHA-pinned actions in .github/workflows up to date (weekly PRs).
+# Review these PRs like any other change before merging.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

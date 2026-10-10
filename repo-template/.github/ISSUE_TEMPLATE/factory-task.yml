@@ -1,0 +1,44 @@
+name: 🏭 Factory task
+description: A task for Claude. Add the `claude-ready` label when it's ready to build.
+title: "[Task] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write this like a ticket for a capable new teammate who has never seen the project.
+        When you're happy with it, add the **claude-ready** label to start the factory.
+        ⚠️ Never paste passwords, API keys or customer data into an issue — Claude reads all of it.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be true when this is done, and why it matters.
+      placeholder: Users can reset their password from the login page.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: A checklist Claude must satisfy. Be concrete and testable.
+      placeholder: |
+        - [ ] "Forgot password?" link on /login
+        - [ ] Sends a reset email with a link valid for 1 hour
+        - [ ] Tests cover expired and reused links
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Hints and context
+      description: Relevant files, similar features, constraints, things NOT to do.
+      placeholder: Follow the pattern in src/auth/verify-email.ts. Don't add new dependencies.
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      description: Big tasks burn through Claude Pro limits. Split anything larger than M.
+      options:
+        - S (under an hour of human work)
+        - M (a few hours)
+        - L (split me!)

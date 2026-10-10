@@ -1,0 +1,39 @@
+# Start:   docker compose up -d --build
+# Logs:    docker compose logs -f
+# Stop:    docker compose down
+services:
+  runner:
+    build: .
+    image: software-factory-runner:latest
+    env_file: .env
+    restart: unless-stopped        # ephemeral: exits after each job -> wiped & re-registered
+    init: false                    # tini is already the entrypoint
+    stop_grace_period: 30s         # time to deregister cleanly
+
+    # ---- Hardening ----------------------------------------------------------
+    security_opt:
+      - no-new-privileges:true     # setuid binaries can't escalate
+    cap_drop: [ALL]
+    cap_add:                       # only what the root supervisor needs to wipe
+      - CHOWN                      # state and drop to the job user; job processes
+      - DAC_OVERRIDE               # themselves run with zero capabilities
+      - FOWNER
+      - SETUID
+      - SETGID
+    pids_limit: 4096               # stop fork bombs
+    mem_limit: 8g                  # adjust to your machine
+    cpus: 4
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+    # ---- Optional: let jobs use the HOST Docker daemon ----------------------
+    # WARNING: this gives every job root-equivalent access to your computer and
+    # defeats the isolation above. Prefer leaving it off. If you must, run Docker
+    # rootless on the host, or use a dedicated VM for the factory.
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+
+  # ---- Optional: a second repo gets its own runner ---------------------------
+  # Copy the whole `runner:` block above, rename it, and point env_file at a
+  # separate file (e.g. .env.other-repo) with its own GITHUB_REPO and token.

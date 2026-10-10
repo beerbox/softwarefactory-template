@@ -1,0 +1,29 @@
+# QUALITY GATE 2: deterministic checks on every PR and on main.
+# Runs on your self-hosted runner (no GitHub Actions minutes). It executes the
+# PR's code, so it gets no secrets and a read-only token.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: [self-hosted, linux, claude]
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Lint, build and test
+        run: bash ./scripts/ci.sh
